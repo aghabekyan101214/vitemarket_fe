@@ -1,0 +1,133 @@
+{
+  "content": {
+    "locale": "fr",
+    "title": "Produits",
+    "subtitle": null,
+    "blocks": []
+  },
+  "items": [
+    {
+      "id": "01a1cbcf-db32-70c7-97a3-f9ed94d2b832",
+      "sku": "NH-LAMP-LINEN",
+      "locale": "fr",
+      "slug": "lampadaire-en-lin",
+      "name": "Lampadaire en lin",
+      "short_description": "Lampadaire en lin : conçu en Scandinavie, fait pour durer des décennies.",
+      "path": "/products/lampadaire-en-lin",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-lamp-linen.webp",
+        "url": "/mock-media/seed/products/nh-lamp-linen.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Lampadaire en lin"
+      }
+    },
+    {
+      "id": "01a1cbcf-db33-73cb-8f48-e379b193e267",
+      "sku": "NH-SOFA-WOOL",
+      "locale": "fr",
+      "slug": "canape-trois-places-en-laine",
+      "name": "Canapé trois places en laine",
+      "short_description": "Canapé trois places en laine : conçu en Scandinavie, fait pour durer des décennies.",
+      "path": "/products/canape-trois-places-en-laine",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-sofa-wool.webp",
+        "url": "/mock-media/seed/products/nh-sofa-wool.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Canapé trois places en laine"
+      }
+    },
+    {
+      "id": "01a1cbcf-db34-7981-a4f4-69c7269a1510",
+      "sku": "NH-SHELF-PINE",
+      "locale": "fr",
+      "slug": "etagere-murale-en-pin",
+      "name": "Étagère murale en pin",
+      "short_description": "Étagère murale en pin : conçu en Scandinavie, fait pour durer des décennies.",
+      "path": "/products/etagere-murale-en-pin",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-shelf-pine.webp",
+        "url": "/mock-media/seed/products/nh-shelf-pine.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Étagère murale en pin"
+      }
+    },
+    {
+      "id": "01a1cbcf-db36-7420-af08-1a973140ff22",
+      "sku": "NH-RUG-JUTE",
+      "locale": "fr",
+      "slug": "tapis-en-jute",
+      "name": "Tapis en jute",
+      "short_description": "Tapis en jute : conçu en Scandinavie, fait pour durer des décennies.",
+      "path": "/products/tapis-en-jute",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-rug-jute.webp",
+        "url": "/mock-media/seed/products/nh-rug-jute.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Tapis en jute"
+      }
+    },
+    {
+      "id": "01a1cbcf-db37-762e-84e1-bf0650a1deac",
+      "sku": "NH-BED-BIRCH",
+      "locale": "fr",
+      "slug": "cadre-de-lit-en-bouleau",
+      "name": "Cadre de lit en bouleau",
+      "short_description": "Cadre de lit en bouleau : conçu en Scandinavie, fait pour durer des décennies.",
+      "path": "/products/cadre-de-lit-en-bouleau",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-bed-birch.webp",
+        "url": "/mock-media/seed/products/nh-bed-birch.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Cadre de lit en bouleau"
+      }
+    },
+    {
+      "id": "01a1cbcf-db38-7997-8ece-216d59f51a3f",
+      "sku": "NH-STOOL-WALNUT",
+      "locale": "fr",
+      "slug": "tabouret-de-bar-en-noyer",
+      "name": "Tabouret de bar en noyer",
+      "short_description": "Tabouret de bar en noyer : conçu en Scandinavie, fait pour durer des décennies.",
+      "path": "/products/tabouret-de-bar-en-noyer",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-stool-walnut.webp",
+        "url": "/mock-media/seed/products/nh-stool-walnut.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Tabouret de bar en noyer"
+      }
+    },
+    {
+      "id": "01a1cbcf-db3a-7008-b18f-9e78431d1972",
+      "sku": "NH-MIRROR-BRASS",
+      "locale": "fr",
+      "slug": "miroir-rond-en-laiton",
+      "name": "Miroir rond en laiton",
+      "short_description": "Miroir rond en laiton : conçu en Scandinavie, fait pour durer des décennies.",
+      "path": "/products/miroir-rond-en-laiton",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-mirror-brass.webp",
+        "url": "/mock-media/seed/products/nh-mirror-brass.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Miroir rond en laiton"
+      }
+    }
+  ],
+  "page": 1,
+  "page_size": 100,
+  "total": 7,
+  "total_pages": 1
+}

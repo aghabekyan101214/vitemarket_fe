@@ -1,0 +1,41 @@
+{
+  "page": "products",
+  "locale": "de",
+  "path": "/products",
+  "title": "Produkte | Nordic Home Deutschland",
+  "description": "Langlebige Möbel aus natürlichen Materialien.",
+  "canonical": "https://nordic-home-de.localhost/products",
+  "robots": "index,follow",
+  "og": {
+    "title": "Produkte | Nordic Home Deutschland",
+    "description": "Langlebige Möbel aus natürlichen Materialien.",
+    "image": null,
+    "type": "website",
+    "url": "https://nordic-home-de.localhost/products",
+    "locale": "de_DE",
+    "site_name": "Nordic Home Deutschland"
+  },
+  "alternates": [
+    {
+      "hreflang": "de-DE",
+      "href": "https://nordic-home-de.localhost/products"
+    },
+    {
+      "hreflang": "en-DE",
+      "href": "https://nordic-home-de.localhost/en/products"
+    },
+    {
+      "hreflang": "x-default",
+      "href": "https://nordic-home-de.localhost/products"
+    }
+  ],
+  "json_ld": [
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Produkte | Nordic Home Deutschland",
+      "inLanguage": "de",
+      "url": "https://nordic-home-de.localhost/products"
+    }
+  ]
+}

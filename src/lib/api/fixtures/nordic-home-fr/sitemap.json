@@ -1,0 +1,67 @@
+{
+  "entries": [
+    {
+      "locale": "fr",
+      "path": "/",
+      "loc": "https://nordic-home-fr.localhost/",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": []
+    },
+    {
+      "locale": "fr",
+      "path": "/products",
+      "loc": "https://nordic-home-fr.localhost/products",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": []
+    },
+    {
+      "locale": "fr",
+      "path": "/products/cadre-de-lit-en-bouleau",
+      "loc": "https://nordic-home-fr.localhost/products/cadre-de-lit-en-bouleau",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": []
+    },
+    {
+      "locale": "fr",
+      "path": "/products/canape-trois-places-en-laine",
+      "loc": "https://nordic-home-fr.localhost/products/canape-trois-places-en-laine",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": []
+    },
+    {
+      "locale": "fr",
+      "path": "/products/etagere-murale-en-pin",
+      "loc": "https://nordic-home-fr.localhost/products/etagere-murale-en-pin",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": []
+    },
+    {
+      "locale": "fr",
+      "path": "/products/lampadaire-en-lin",
+      "loc": "https://nordic-home-fr.localhost/products/lampadaire-en-lin",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": []
+    },
+    {
+      "locale": "fr",
+      "path": "/products/miroir-rond-en-laiton",
+      "loc": "https://nordic-home-fr.localhost/products/miroir-rond-en-laiton",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": []
+    },
+    {
+      "locale": "fr",
+      "path": "/products/tabouret-de-bar-en-noyer",
+      "loc": "https://nordic-home-fr.localhost/products/tabouret-de-bar-en-noyer",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": []
+    },
+    {
+      "locale": "fr",
+      "path": "/products/tapis-en-jute",
+      "loc": "https://nordic-home-fr.localhost/products/tapis-en-jute",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": []
+    }
+  ]
+}

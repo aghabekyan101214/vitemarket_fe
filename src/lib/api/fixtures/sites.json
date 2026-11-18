@@ -1,0 +1,46 @@
+{
+  "sites": [
+    {
+      "key": "nordic-home-de",
+      "id": "01a1cbcf-db46-7e02-916e-4880d2a1b5c7",
+      "name": "Nordic Home Deutschland",
+      "default_locale": "de",
+      "locales": [
+        "de",
+        "en"
+      ],
+      "primary_host": "nordic-home-de.localhost",
+      "content_version": 7,
+      "hosts": [
+        {
+          "hostname": "nordic-home-de.localhost",
+          "is_primary": true,
+          "redirect_to_primary": true
+        },
+        {
+          "hostname": "www.nordic-home-de.localhost",
+          "is_primary": false,
+          "redirect_to_primary": true
+        }
+      ]
+    },
+    {
+      "key": "nordic-home-fr",
+      "id": "01a1cbcf-db5d-7638-b2fa-e6bf5eb6c712",
+      "name": "Nordic Home France",
+      "default_locale": "fr",
+      "locales": [
+        "fr"
+      ],
+      "primary_host": "nordic-home-fr.localhost",
+      "content_version": 9,
+      "hosts": [
+        {
+          "hostname": "nordic-home-fr.localhost",
+          "is_primary": true,
+          "redirect_to_primary": true
+        }
+      ]
+    }
+  ]
+}

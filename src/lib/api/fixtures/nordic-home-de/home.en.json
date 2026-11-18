@@ -1,0 +1,96 @@
+{
+  "locale": "en",
+  "title": "Scandinavian design for your home",
+  "subtitle": "Durable furniture made from natural materials.",
+  "blocks": [
+    {
+      "type": "hero",
+      "heading": "Timeless living",
+      "subheading": "Durable furniture made from natural materials.",
+      "image_key": null,
+      "cta": {
+        "label": "Browse all products",
+        "href": "/en/products"
+      }
+    },
+    {
+      "type": "featured_products",
+      "heading": "Customer favourites",
+      "limit": 3
+    },
+    {
+      "type": "features",
+      "heading": null,
+      "items": [
+        {
+          "title": "Solid wood",
+          "description": "Certified timber only.",
+          "icon": null
+        },
+        {
+          "title": "Handmade",
+          "description": "Crafted in small workshops.",
+          "icon": null
+        },
+        {
+          "title": "10-year warranty",
+          "description": "Built for generations.",
+          "icon": null
+        }
+      ]
+    }
+  ],
+  "featured_products": [
+    {
+      "id": "01a1cbcf-db2b-7b64-86b9-1e3a0e8b54b3",
+      "sku": "NH-CHAIR-OAK",
+      "locale": "en",
+      "slug": "oak-lounge-chair",
+      "name": "Oak Lounge Chair",
+      "short_description": "Oak Lounge Chair: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/oak-lounge-chair",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-chair-oak.webp",
+        "url": "/mock-media/seed/products/nh-chair-oak.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Oak Lounge Chair"
+      }
+    },
+    {
+      "id": "01a1cbcf-db30-7bca-9007-570a20cf98e8",
+      "sku": "NH-TABLE-ASH",
+      "locale": "en",
+      "slug": "ash-dining-table",
+      "name": "Ash Dining Table",
+      "short_description": "Ash Dining Table: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/ash-dining-table",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-table-ash.webp",
+        "url": "/mock-media/seed/products/nh-table-ash.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Ash Dining Table"
+      }
+    },
+    {
+      "id": "01a1cbcf-db32-70c7-97a3-f9ed94d2b832",
+      "sku": "NH-LAMP-LINEN",
+      "locale": "en",
+      "slug": "linen-floor-lamp",
+      "name": "Linen Floor Lamp",
+      "short_description": "Linen Floor Lamp: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/linen-floor-lamp",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-lamp-linen.webp",
+        "url": "/mock-media/seed/products/nh-lamp-linen.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Linen Floor Lamp"
+      }
+    }
+  ]
+}

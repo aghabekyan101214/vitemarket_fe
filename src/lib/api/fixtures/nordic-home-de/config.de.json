@@ -1,0 +1,82 @@
+{
+  "site": {
+    "key": "nordic-home-de",
+    "name": "Nordic Home Deutschland",
+    "country_code": "DE",
+    "default_locale": "de",
+    "locales": [
+      "de",
+      "en"
+    ],
+    "primary_host": "nordic-home-de.localhost",
+    "base_url": "https://nordic-home-de.localhost"
+  },
+  "locale": "de",
+  "theme": {
+    "tokens": {
+      "colors": {
+        "primary": "#1F3A5F",
+        "primary_foreground": "#FFFFFF",
+        "secondary": "#E8E1D9",
+        "accent": "#C8553D",
+        "background": "#FAFAF7",
+        "foreground": "#1B1B1B",
+        "muted": "#6B7280",
+        "border": "#E5E7EB"
+      },
+      "fonts": {
+        "heading": {
+          "family": "Fraunces",
+          "weights": [
+            500,
+            700
+          ],
+          "source": "google"
+        },
+        "body": {
+          "family": "Inter",
+          "weights": [
+            400,
+            600
+          ],
+          "source": "google"
+        }
+      },
+      "radius": "sm",
+      "header_style": "split",
+      "product_card_style": "plain"
+    },
+    "version": 1,
+    "logo": null,
+    "logo_dark": null,
+    "favicon": null,
+    "og_default_image": null
+  },
+  "nav": [
+    {
+      "page": "home",
+      "label": "Nordic Home Deutschland",
+      "path": "/"
+    },
+    {
+      "page": "products",
+      "label": "Produkte",
+      "path": "/products"
+    }
+  ],
+  "locale_links": [
+    {
+      "locale": "de",
+      "path": "/"
+    },
+    {
+      "locale": "en",
+      "path": "/en"
+    }
+  ],
+  "media": {
+    "base_url": "/mock-media",
+    "transform_provider": "none"
+  },
+  "content_version": 7
+}

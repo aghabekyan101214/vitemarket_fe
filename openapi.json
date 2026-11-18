@@ -1,0 +1,7500 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Showcase API",
+    "description": "Multi-tenant backend for product showcase websites. `/public/v1` serves read-only, CDN-cacheable content for static site generation; `/admin/v1` manages websites, products and publishing.",
+    "version": "dev"
+  },
+  "paths": {
+    "/health/live": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Liveness probe",
+        "description": "The process is up and serving requests. Does not touch dependencies.",
+        "operationId": "live_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Readiness probe",
+        "description": "The service can handle traffic: the database answers within 2 seconds.",
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A dependency (database) is unavailable"
+          }
+        }
+      }
+    },
+    "/public/v1/resolve": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Resolve a hostname to its website",
+        "description": "Fallback/tooling endpoint. The frontend middleware normally uses the `/sites` map.",
+        "operationId": "resolve_public_v1_resolve_get",
+        "parameters": [
+          {
+            "name": "host",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 260,
+              "description": "Host header value",
+              "title": "Host"
+            },
+            "description": "Host header value"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResolvedHost"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (the `If-None-Match` ETag still matches)"
+          },
+          "404": {
+            "description": "No active website for this host"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/sites": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "All active websites with their hosts",
+        "description": "Host → site map for the frontend middleware and `generateStaticParams`.",
+        "operationId": "sites_public_v1_sites_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteList"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (the `If-None-Match` ETag still matches)"
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{site}/config": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Site settings, theme, navigation",
+        "operationId": "config_public_v1_sites__site__config_get",
+        "parameters": [
+          {
+            "name": "site",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 50,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$",
+              "description": "Website key",
+              "title": "Site"
+            },
+            "description": "Website key"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 10
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale.",
+              "title": "Locale"
+            },
+            "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteConfig"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (the `If-None-Match` ETag still matches)"
+          },
+          "404": {
+            "description": "Unknown or inactive website, or locale not offered by the site"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{site}/home": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Home page content and featured products",
+        "operationId": "home_public_v1_sites__site__home_get",
+        "parameters": [
+          {
+            "name": "site",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 50,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$",
+              "description": "Website key",
+              "title": "Site"
+            },
+            "description": "Website key"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 10
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale.",
+              "title": "Locale"
+            },
+            "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomePage"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (the `If-None-Match` ETag still matches)"
+          },
+          "404": {
+            "description": "Unknown or inactive website, or locale not offered by the site"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{site}/products": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Visible products (paginated)",
+        "operationId": "products_public_v1_sites__site__products_get",
+        "parameters": [
+          {
+            "name": "site",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 50,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$",
+              "description": "Website key",
+              "title": "Site"
+            },
+            "description": "Website key"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 10
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale.",
+              "title": "Locale"
+            },
+            "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10000,
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 24,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductList"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (the `If-None-Match` ETag still matches)"
+          },
+          "404": {
+            "description": "Unknown or inactive website, or locale not offered by the site"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{site}/products/{slug}": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Product detail",
+        "description": "Accepts the slug of any locale in the fallback chain. When the returned `path`\ndiffers from the requested one, the frontend should redirect to it.",
+        "operationId": "product_public_v1_sites__site__products__slug__get",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200,
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+              "title": "Slug"
+            }
+          },
+          {
+            "name": "site",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 50,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$",
+              "description": "Website key",
+              "title": "Site"
+            },
+            "description": "Website key"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 10
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale.",
+              "title": "Locale"
+            },
+            "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDetail"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (the `If-None-Match` ETag still matches)"
+          },
+          "404": {
+            "description": "Unknown website, locale or product"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{site}/seo": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Resolved SEO metadata for a page",
+        "description": "Overrides from `seo_metadata`, falling back to page content and site defaults.",
+        "operationId": "seo_public_v1_sites__site__seo_get",
+        "parameters": [
+          {
+            "name": "site",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 50,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$",
+              "description": "Website key",
+              "title": "Site"
+            },
+            "description": "Website key"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "home",
+                "products",
+                "product"
+              ],
+              "type": "string",
+              "title": "Page"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 10
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale.",
+              "title": "Locale"
+            },
+            "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale."
+          },
+          {
+            "name": "slug",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 200,
+                  "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Seo"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (the `If-None-Match` ETag still matches)"
+          },
+          "404": {
+            "description": "Unknown or inactive website, or locale not offered by the site"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{site}/bundle": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Everything needed to build one locale of a site",
+        "description": "Config, home, products page, all visible product summaries and SEO for every page,\nbuilt from a fixed number of queries regardless of catalog size.",
+        "operationId": "bundle_public_v1_sites__site__bundle_get",
+        "parameters": [
+          {
+            "name": "site",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 50,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$",
+              "description": "Website key",
+              "title": "Site"
+            },
+            "description": "Website key"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 10
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale.",
+              "title": "Locale"
+            },
+            "description": "Locale (e.g. `de`, `en`). Defaults to the site's default locale; content missing in this locale falls back to the default locale."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bundle"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (the `If-None-Match` ETag still matches)"
+          },
+          "404": {
+            "description": "Unknown or inactive website, or locale not offered by the site"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/sites/{site}/sitemap": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Sitemap entries with hreflang alternates",
+        "operationId": "sitemap_public_v1_sites__site__sitemap_get",
+        "parameters": [
+          {
+            "name": "site",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 50,
+              "pattern": "^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$",
+              "description": "Website key",
+              "title": "Site"
+            },
+            "description": "Website key"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 10
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Limit to one locale; default: all",
+              "title": "Locale"
+            },
+            "description": "Limit to one locale; default: all"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sitemap"
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified (the `If-None-Match` ETag still matches)"
+          },
+          "404": {
+            "description": "Unknown or inactive website, or locale not offered by the site"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/auth/login": {
+      "post": {
+        "tags": [
+          "admin: auth"
+        ],
+        "summary": "Exchange email + password for an access token",
+        "description": "5 consecutive failures lock the account for 15 minutes.",
+        "operationId": "login_admin_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials (also returned while locked out)"
+          },
+          "429": {
+            "description": "Too many attempts from this IP"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/auth/me": {
+      "get": {
+        "tags": [
+          "admin: auth"
+        ],
+        "summary": "The authenticated admin",
+        "operationId": "me_admin_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/admin/v1/publish-jobs/{job_id}/retry": {
+      "post": {
+        "tags": [
+          "admin: websites"
+        ],
+        "summary": "Requeue a failed publish job",
+        "operationId": "retry_job_admin_v1_publish_jobs__job_id__retry_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishJobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites": {
+      "get": {
+        "tags": [
+          "admin: websites"
+        ],
+        "summary": "Websites visible to the caller",
+        "operationId": "list_websites_admin_v1_websites_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WebsiteOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Websites Admin V1 Websites Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "admin: websites"
+        ],
+        "summary": "Create a website",
+        "description": "Created as `draft` with a default theme. Add and verify a primary domain, then\nenable it.",
+        "operationId": "create_website_admin_v1_websites_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/admin/v1/websites/{website_id}": {
+      "get": {
+        "tags": [
+          "admin: websites"
+        ],
+        "summary": "Get Website",
+        "operationId": "get_website_admin_v1_websites__website_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "admin: websites"
+        ],
+        "summary": "Update website settings",
+        "operationId": "update_website_admin_v1_websites__website_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/enable": {
+      "post": {
+        "tags": [
+          "admin: websites"
+        ],
+        "summary": "Make the site public",
+        "operationId": "enable_website_admin_v1_websites__website_id__enable_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/disable": {
+      "post": {
+        "tags": [
+          "admin: websites"
+        ],
+        "summary": "Take the site down",
+        "operationId": "disable_website_admin_v1_websites__website_id__disable_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/publish": {
+      "post": {
+        "tags": [
+          "admin: websites"
+        ],
+        "summary": "Regenerate the whole site now",
+        "description": "Needed for sites with `auto_publish=false`; merges into a pending job if any.",
+        "operationId": "publish_admin_v1_websites__website_id__publish_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishJobOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/publish-jobs": {
+      "get": {
+        "tags": [
+          "admin: websites"
+        ],
+        "summary": "Recent jobs",
+        "operationId": "publish_jobs_admin_v1_websites__website_id__publish_jobs_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PublishJobOut"
+                  },
+                  "title": "Response Publish Jobs Admin V1 Websites  Website Id  Publish Jobs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/domains": {
+      "get": {
+        "tags": [
+          "admin: domains"
+        ],
+        "summary": "List Domains",
+        "operationId": "list_domains_admin_v1_websites__website_id__domains_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DomainOut"
+                  },
+                  "title": "Response List Domains Admin V1 Websites  Website Id  Domains Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "admin: domains"
+        ],
+        "summary": "Add a domain (pending until verified)",
+        "description": "The response contains the DNS TXT record to create for verification. The first\ndomain of a website becomes its primary domain.",
+        "operationId": "add_domain_admin_v1_websites__website_id__domains_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/domains/{domain_id}": {
+      "patch": {
+        "tags": [
+          "admin: domains"
+        ],
+        "summary": "Update Domain",
+        "operationId": "update_domain_admin_v1_domains__domain_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Domain Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DomainUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin: domains"
+        ],
+        "summary": "Delete Domain",
+        "operationId": "delete_domain_admin_v1_domains__domain_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Domain Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/domains/{domain_id}/verify": {
+      "post": {
+        "tags": [
+          "admin: domains"
+        ],
+        "summary": "Check the DNS TXT record and activate the domain (admin)",
+        "operationId": "verify_domain_admin_v1_domains__domain_id__verify_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Domain Id"
+            }
+          },
+          {
+            "name": "force",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Skip the DNS check",
+              "default": false,
+              "title": "Force"
+            },
+            "description": "Skip the DNS check"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainOut"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "TXT record missing or wrong"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/domains/{domain_id}/make-primary": {
+      "post": {
+        "tags": [
+          "admin: domains"
+        ],
+        "summary": "Make Primary",
+        "operationId": "make_primary_admin_v1_domains__domain_id__make_primary_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Domain Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomainOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/theme": {
+      "get": {
+        "tags": [
+          "admin: theme"
+        ],
+        "summary": "Theme tokens (ETag = version)",
+        "operationId": "get_theme_admin_v1_websites__website_id__theme_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThemeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "admin: theme"
+        ],
+        "summary": "Replace theme tokens",
+        "description": "Requires `If-Match: \"<version>\"` from the last GET.",
+        "operationId": "put_theme_admin_v1_websites__website_id__theme_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "if-match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-Match"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThemeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThemeOut"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Version mismatch (someone else saved first)"
+          },
+          "428": {
+            "description": "If-Match header missing"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/content": {
+      "get": {
+        "tags": [
+          "admin: content & SEO"
+        ],
+        "summary": "All pages and locales",
+        "operationId": "list_content_admin_v1_websites__website_id__content_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContentSummary"
+                  },
+                  "title": "Response List Content Admin V1 Websites  Website Id  Content Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/content/{page}/{locale}": {
+      "get": {
+        "tags": [
+          "admin: content & SEO"
+        ],
+        "summary": "ETag = version",
+        "operationId": "get_content_admin_v1_websites__website_id__content__page___locale__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "home",
+                "products"
+              ],
+              "type": "string",
+              "title": "Page"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "de"
+              ],
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "admin: content & SEO"
+        ],
+        "summary": "Create or replace page content",
+        "description": "Updating existing content requires `If-Match: \"<version>\"` from the last GET.\nRich text in `text` blocks is sanitized.",
+        "operationId": "put_content_admin_v1_websites__website_id__content__page___locale__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "home",
+                "products"
+              ],
+              "type": "string",
+              "title": "Page"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "de"
+              ],
+              "title": "Locale"
+            }
+          },
+          {
+            "name": "if-match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-Match"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentOut"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "412": {
+            "description": "Version mismatch (someone else saved first)"
+          },
+          "428": {
+            "description": "If-Match missing for existing content"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/seo": {
+      "get": {
+        "tags": [
+          "admin: content & SEO"
+        ],
+        "summary": "SEO overrides",
+        "operationId": "list_seo_admin_v1_websites__website_id__seo_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "examples": [
+                    "de"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SeoOut"
+                  },
+                  "title": "Response List Seo Admin V1 Websites  Website Id  Seo Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/seo/{page}/{locale}": {
+      "put": {
+        "tags": [
+          "admin: content & SEO"
+        ],
+        "summary": "Set an SEO override",
+        "description": "Empty fields fall back to content-derived values on the public API.",
+        "operationId": "put_seo_admin_v1_websites__website_id__seo__page___locale__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "home",
+                "products",
+                "product"
+              ],
+              "type": "string",
+              "title": "Page"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "de"
+              ],
+              "title": "Locale"
+            }
+          },
+          {
+            "name": "product_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for page=product, forbidden otherwise",
+              "title": "Product Id"
+            },
+            "description": "Required for page=product, forbidden otherwise"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeoFields"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeoOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin: content & SEO"
+        ],
+        "summary": "Delete Seo",
+        "operationId": "delete_seo_admin_v1_websites__website_id__seo__page___locale__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "home",
+                "products",
+                "product"
+              ],
+              "type": "string",
+              "title": "Page"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "de"
+              ],
+              "title": "Locale"
+            }
+          },
+          {
+            "name": "product_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required for page=product, forbidden otherwise",
+              "title": "Product Id"
+            },
+            "description": "Required for page=product, forbidden otherwise"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/products": {
+      "get": {
+        "tags": [
+          "admin: products"
+        ],
+        "summary": "Search the catalog",
+        "operationId": "list_products_admin_v1_products_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "SKU or name",
+              "title": "Q"
+            },
+            "description": "SKU or name"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "active",
+                    "archived"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "website_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Assigned to",
+              "title": "Website Id"
+            },
+            "description": "Assigned to"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "admin: products"
+        ],
+        "summary": "Create Product",
+        "operationId": "create_product_admin_v1_products_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/products/{product_id}": {
+      "get": {
+        "tags": [
+          "admin: products"
+        ],
+        "summary": "Get Product",
+        "operationId": "get_product_admin_v1_products__product_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "admin: products"
+        ],
+        "summary": "Update shared product data",
+        "description": "Republishes every website the product is assigned to.",
+        "operationId": "update_product_admin_v1_products__product_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/products/{product_id}/archive": {
+      "post": {
+        "tags": [
+          "admin: products"
+        ],
+        "summary": "Archive Product",
+        "description": "Hides the product on every website (assignments are kept).",
+        "operationId": "archive_product_admin_v1_products__product_id__archive_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/products/{product_id}/translations": {
+      "get": {
+        "tags": [
+          "admin: products"
+        ],
+        "summary": "List Translations",
+        "operationId": "list_translations_admin_v1_products__product_id__translations_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TranslationOut"
+                  },
+                  "title": "Response List Translations Admin V1 Products  Product Id  Translations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/products/{product_id}/translations/{locale}": {
+      "put": {
+        "tags": [
+          "admin: products"
+        ],
+        "summary": "Put Translation",
+        "operationId": "put_translation_admin_v1_products__product_id__translations__locale__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "de"
+              ],
+              "title": "Locale"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranslationIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TranslationOut"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "409": {
+            "description": "Slug already taken"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin: products"
+        ],
+        "summary": "Delete Translation",
+        "operationId": "delete_translation_admin_v1_products__product_id__translations__locale__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "de"
+              ],
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Required by a website's default locale"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/products": {
+      "get": {
+        "tags": [
+          "admin: site products"
+        ],
+        "summary": "Products of a website",
+        "operationId": "list_assignments_admin_v1_websites__website_id__products_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssignmentOut"
+                  },
+                  "title": "Response List Assignments Admin V1 Websites  Website Id  Products Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/products/order": {
+      "put": {
+        "tags": [
+          "admin: site products"
+        ],
+        "summary": "Bulk reorder",
+        "operationId": "reorder_admin_v1_websites__website_id__products_order_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/products/bulk-assign": {
+      "post": {
+        "tags": [
+          "admin: site products"
+        ],
+        "summary": "Bulk Assign",
+        "operationId": "bulk_assign_admin_v1_websites__website_id__products_bulk_assign_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkAssignIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkAssignOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/products/{product_id}": {
+      "put": {
+        "tags": [
+          "admin: site products"
+        ],
+        "summary": "Assign a product / change visibility, featured flag or position",
+        "operationId": "put_assignment_admin_v1_websites__website_id__products__product_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignmentIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Visible products need a default-locale translation"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin: site products"
+        ],
+        "summary": "Delete Assignment",
+        "operationId": "delete_assignment_admin_v1_websites__website_id__products__product_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/products/{product_id}/images": {
+      "get": {
+        "tags": [
+          "admin: media"
+        ],
+        "summary": "List Images",
+        "operationId": "list_images_admin_v1_products__product_id__images_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ImageOut"
+                  },
+                  "title": "Response List Images Admin V1 Products  Product Id  Images Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "admin: media"
+        ],
+        "summary": "Upload a product image",
+        "description": "Metadata (EXIF/GPS) is stripped and orientation applied. Appended after existing\nimages; the object key is immutable and cached for a year.",
+        "operationId": "upload_image_admin_v1_products__product_id__images_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_image_admin_v1_products__product_id__images_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageOut"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "File larger than UPLOAD_MAX_BYTES"
+          },
+          "415": {
+            "description": "Not a JPEG/PNG/WebP/AVIF image, animated, corrupt or too many pixels"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/products/{product_id}/images/order": {
+      "put": {
+        "tags": [
+          "admin: media"
+        ],
+        "summary": "Reorder images (first = primary image)",
+        "operationId": "reorder_images_admin_v1_products__product_id__images_order_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageOrderIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ImageOut"
+                  },
+                  "title": "Response Reorder Images Admin V1 Products  Product Id  Images Order Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/images/{image_id}": {
+      "patch": {
+        "tags": [
+          "admin: media"
+        ],
+        "summary": "Update alt texts",
+        "operationId": "update_image_admin_v1_images__image_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "image_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Image Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageAltUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin: media"
+        ],
+        "summary": "Delete Image",
+        "description": "The object itself is deleted by the GC sweep after MEDIA_RETENTION_DAYS.",
+        "operationId": "delete_image_admin_v1_images__image_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "image_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Image Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/theme/assets": {
+      "post": {
+        "tags": [
+          "admin: media"
+        ],
+        "summary": "Upload a logo, dark logo, favicon or default social image",
+        "operationId": "upload_theme_asset_admin_v1_websites__website_id__theme_assets_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_theme_asset_admin_v1_websites__website_id__theme_assets_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThemeOut"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "File larger than UPLOAD_MAX_BYTES"
+          },
+          "415": {
+            "description": "Not a JPEG/PNG/WebP/AVIF image, animated, corrupt or too many pixels"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/websites/{website_id}/theme/assets/{kind}": {
+      "delete": {
+        "tags": [
+          "admin: media"
+        ],
+        "summary": "Delete Theme Asset",
+        "operationId": "delete_theme_asset_admin_v1_websites__website_id__theme_assets__kind__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "logo",
+                "logo_dark",
+                "favicon",
+                "og"
+              ],
+              "type": "string",
+              "title": "Kind"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThemeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/users": {
+      "get": {
+        "tags": [
+          "admin: users & audit"
+        ],
+        "summary": "List Users",
+        "operationId": "list_users_admin_v1_users_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Users Admin V1 Users Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "admin: users & audit"
+        ],
+        "summary": "Create User",
+        "operationId": "create_user_admin_v1_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/admin/v1/users/{user_id}": {
+      "patch": {
+        "tags": [
+          "admin: users & audit"
+        ],
+        "summary": "Role, activation, password",
+        "operationId": "update_user_admin_v1_users__user_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/users/{user_id}/websites": {
+      "put": {
+        "tags": [
+          "admin: users & audit"
+        ],
+        "summary": "Website grants",
+        "operationId": "set_user_websites_admin_v1_users__user_id__websites_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrantsIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/v1/audit-log": {
+      "get": {
+        "tags": [
+          "admin: users & audit"
+        ],
+        "summary": "Newest first",
+        "operationId": "audit_log_admin_v1_audit_log_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "website_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Website Id"
+            }
+          },
+          {
+            "name": "entity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 50
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity"
+            }
+          },
+          {
+            "name": "entity_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entity Id"
+            }
+          },
+          {
+            "name": "admin_user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Admin User Id"
+            }
+          },
+          {
+            "name": "before_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Cursor: entries older than this id",
+              "title": "Before Id"
+            },
+            "description": "Cursor: entries older than this id"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditEntryOut"
+                  },
+                  "title": "Response Audit Log Admin V1 Audit Log Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Alternate": {
+        "properties": {
+          "hreflang": {
+            "type": "string",
+            "title": "Hreflang"
+          },
+          "href": {
+            "type": "string",
+            "title": "Href"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hreflang",
+          "href"
+        ],
+        "title": "Alternate"
+      },
+      "Asset": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "url"
+        ],
+        "title": "Asset"
+      },
+      "AssignmentIn": {
+        "properties": {
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "is_visible": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Visible"
+          },
+          "is_featured": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Featured"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "AssignmentIn",
+        "examples": [
+          {
+            "is_featured": true,
+            "is_visible": true,
+            "position": 10
+          }
+        ]
+      },
+      "AssignmentOut": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Product Id"
+          },
+          "sku": {
+            "type": "string",
+            "title": "Sku"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Name in the website's default locale"
+          },
+          "has_default_translation": {
+            "type": "boolean",
+            "title": "Has Default Translation"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "is_visible": {
+            "type": "boolean",
+            "title": "Is Visible"
+          },
+          "is_featured": {
+            "type": "boolean",
+            "title": "Is Featured"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "sku",
+          "status",
+          "name",
+          "has_default_translation",
+          "position",
+          "is_visible",
+          "is_featured"
+        ],
+        "title": "AssignmentOut"
+      },
+      "AuditEntryOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "admin_user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Admin User Id"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "entity": {
+            "type": "string",
+            "title": "Entity"
+          },
+          "entity_id": {
+            "type": "string",
+            "title": "Entity Id"
+          },
+          "website_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website Id"
+          },
+          "diff": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Diff"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "admin_user_id",
+          "action",
+          "entity",
+          "entity_id",
+          "website_id",
+          "diff",
+          "created_at"
+        ],
+        "title": "AuditEntryOut"
+      },
+      "Body_upload_image_admin_v1_products__product_id__images_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "JPEG, PNG, WebP or AVIF"
+          },
+          "alt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alt",
+            "description": "JSON object, e.g. {\"en\": \"Oak chair\", \"de\": \"Eichenstuhl\"}"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_image_admin_v1_products__product_id__images_post"
+      },
+      "Body_upload_theme_asset_admin_v1_websites__website_id__theme_assets_post": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "logo",
+              "logo_dark",
+              "favicon",
+              "og"
+            ],
+            "title": "Kind"
+          },
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "JPEG, PNG, WebP or AVIF (no SVG)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "file"
+        ],
+        "title": "Body_upload_theme_asset_admin_v1_websites__website_id__theme_assets_post"
+      },
+      "BulkAssignIn": {
+        "properties": {
+          "product_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "minItems": 1,
+            "title": "Product Ids"
+          },
+          "is_visible": {
+            "type": "boolean",
+            "title": "Is Visible",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "product_ids"
+        ],
+        "title": "BulkAssignIn"
+      },
+      "BulkAssignOut": {
+        "properties": {
+          "assigned": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Assigned"
+          },
+          "already_assigned": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Already Assigned"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assigned",
+          "already_assigned"
+        ],
+        "title": "BulkAssignOut"
+      },
+      "Bundle": {
+        "properties": {
+          "config": {
+            "$ref": "#/components/schemas/SiteConfig"
+          },
+          "home": {
+            "$ref": "#/components/schemas/HomePage"
+          },
+          "products_page": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PageContent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "products": {
+            "items": {
+              "$ref": "#/components/schemas/ProductSummary"
+            },
+            "type": "array",
+            "title": "Products"
+          },
+          "slugs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Slugs"
+          },
+          "seo": {
+            "$ref": "#/components/schemas/BundleSeo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "config",
+          "home",
+          "products_page",
+          "products",
+          "slugs",
+          "seo"
+        ],
+        "title": "Bundle"
+      },
+      "BundleSeo": {
+        "properties": {
+          "home": {
+            "$ref": "#/components/schemas/Seo"
+          },
+          "products": {
+            "$ref": "#/components/schemas/Seo"
+          },
+          "product": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Seo"
+            },
+            "type": "object",
+            "title": "Product",
+            "description": "Keyed by product slug"
+          }
+        },
+        "type": "object",
+        "required": [
+          "home",
+          "products",
+          "product"
+        ],
+        "title": "BundleSeo"
+      },
+      "ContentOut": {
+        "properties": {
+          "page": {
+            "type": "string",
+            "title": "Page"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subtitle"
+          },
+          "blocks": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/HeroBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/TextBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/FeatureListBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/FeaturedProductsBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/CtaBlock"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "type",
+                "mapping": {
+                  "cta": "#/components/schemas/CtaBlock",
+                  "featured_products": "#/components/schemas/FeaturedProductsBlock",
+                  "features": "#/components/schemas/FeatureListBlock",
+                  "hero": "#/components/schemas/HeroBlock",
+                  "text": "#/components/schemas/TextBlock"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Blocks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page",
+          "locale",
+          "title",
+          "version",
+          "updated_at",
+          "subtitle",
+          "blocks"
+        ],
+        "title": "ContentOut"
+      },
+      "ContentSummary": {
+        "properties": {
+          "page": {
+            "type": "string",
+            "title": "Page"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page",
+          "locale",
+          "title",
+          "version",
+          "updated_at"
+        ],
+        "title": "ContentSummary"
+      },
+      "ContentUpdate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subtitle"
+          },
+          "blocks": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/HeroBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/TextBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/FeatureListBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/FeaturedProductsBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/CtaBlock"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "type",
+                "mapping": {
+                  "cta": "#/components/schemas/CtaBlock",
+                  "featured_products": "#/components/schemas/FeaturedProductsBlock",
+                  "features": "#/components/schemas/FeatureListBlock",
+                  "hero": "#/components/schemas/HeroBlock",
+                  "text": "#/components/schemas/TextBlock"
+                }
+              }
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Blocks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "ContentUpdate",
+        "examples": [
+          {
+            "blocks": [
+              {
+                "cta": {
+                  "href": "/products",
+                  "label": "Alle Produkte"
+                },
+                "heading": "Zeitlos wohnen",
+                "type": "hero"
+              },
+              {
+                "heading": "Beliebte Stücke",
+                "limit": 3,
+                "type": "featured_products"
+              },
+              {
+                "body": "<p>Seit 1998 <strong>handgefertigt</strong>.</p>",
+                "type": "text"
+              }
+            ],
+            "subtitle": "Langlebige Möbel aus natürlichen Materialien.",
+            "title": "Skandinavisches Design für Ihr Zuhause"
+          }
+        ]
+      },
+      "CtaBlock": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "cta",
+            "title": "Type",
+            "default": "cta"
+          },
+          "heading": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Heading"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body"
+          },
+          "link": {
+            "$ref": "#/components/schemas/Link"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "heading",
+          "link"
+        ],
+        "title": "CtaBlock"
+      },
+      "DomainCreate": {
+        "properties": {
+          "hostname": {
+            "type": "string",
+            "maxLength": 260,
+            "minLength": 1,
+            "title": "Hostname"
+          },
+          "is_primary": {
+            "type": "boolean",
+            "title": "Is Primary",
+            "default": false
+          },
+          "redirect_to_primary": {
+            "type": "boolean",
+            "title": "Redirect To Primary",
+            "default": true
+          },
+          "cloudflare_zone_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cloudflare Zone Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "hostname"
+        ],
+        "title": "DomainCreate",
+        "examples": [
+          {
+            "cloudflare_zone_id": "023e105f4ecef8ad9ca31a8372d0c353",
+            "hostname": "nordic-home.at",
+            "is_primary": true,
+            "redirect_to_primary": true
+          }
+        ]
+      },
+      "DomainOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "website_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Website Id"
+          },
+          "hostname": {
+            "type": "string",
+            "title": "Hostname"
+          },
+          "is_primary": {
+            "type": "boolean",
+            "title": "Is Primary"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "redirect_to_primary": {
+            "type": "boolean",
+            "title": "Redirect To Primary"
+          },
+          "cloudflare_zone_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cloudflare Zone Id"
+          },
+          "verified_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified At"
+          },
+          "verification": {
+            "$ref": "#/components/schemas/DomainVerification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "website_id",
+          "hostname",
+          "is_primary",
+          "status",
+          "redirect_to_primary",
+          "cloudflare_zone_id",
+          "verified_at",
+          "verification"
+        ],
+        "title": "DomainOut"
+      },
+      "DomainUpdate": {
+        "properties": {
+          "redirect_to_primary": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Redirect To Primary"
+          },
+          "cloudflare_zone_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cloudflare Zone Id"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "disabled"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "DomainUpdate",
+        "description": "Activation happens only through verification; `status` can disable or reset to\npending (which requires verifying again).",
+        "examples": [
+          {
+            "redirect_to_primary": false
+          }
+        ]
+      },
+      "DomainVerification": {
+        "properties": {
+          "record_type": {
+            "type": "string",
+            "const": "TXT",
+            "title": "Record Type",
+            "default": "TXT"
+          },
+          "record_name": {
+            "type": "string",
+            "title": "Record Name"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "record_name",
+          "value"
+        ],
+        "title": "DomainVerification"
+      },
+      "FeatureItem": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "FeatureItem"
+      },
+      "FeatureListBlock": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "features",
+            "title": "Type",
+            "default": "features"
+          },
+          "heading": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heading"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FeatureItem"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "minItems": 1,
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "FeatureListBlock"
+      },
+      "FeaturedProductsBlock": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "featured_products",
+            "title": "Type",
+            "default": "featured_products"
+          },
+          "heading": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heading"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 24.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 8
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "FeaturedProductsBlock",
+        "description": "Renders the website's products flagged is_featured (resolved by the API)."
+      },
+      "GrantsIn": {
+        "properties": {
+          "website_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Website Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "website_ids"
+        ],
+        "title": "GrantsIn"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "version"
+        ],
+        "title": "HealthStatus"
+      },
+      "HeroBlock": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "hero",
+            "title": "Type",
+            "default": "hero"
+          },
+          "heading": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Heading"
+          },
+          "subheading": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subheading"
+          },
+          "image_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Key"
+          },
+          "cta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Link"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "heading"
+        ],
+        "title": "HeroBlock"
+      },
+      "HomePage": {
+        "properties": {
+          "locale": {
+            "type": "string",
+            "title": "Locale",
+            "description": "Locale the content is in (may be the default locale)"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subtitle"
+          },
+          "blocks": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/HeroBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/TextBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/FeatureListBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/FeaturedProductsBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/CtaBlock"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "type",
+                "mapping": {
+                  "cta": "#/components/schemas/CtaBlock",
+                  "featured_products": "#/components/schemas/FeaturedProductsBlock",
+                  "features": "#/components/schemas/FeatureListBlock",
+                  "hero": "#/components/schemas/HeroBlock",
+                  "text": "#/components/schemas/TextBlock"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Blocks"
+          },
+          "featured_products": {
+            "items": {
+              "$ref": "#/components/schemas/ProductSummary"
+            },
+            "type": "array",
+            "title": "Featured Products"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locale",
+          "title",
+          "subtitle",
+          "blocks",
+          "featured_products"
+        ],
+        "title": "HomePage"
+      },
+      "Image": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          },
+          "alt": {
+            "type": "string",
+            "title": "Alt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "url",
+          "width",
+          "height",
+          "alt"
+        ],
+        "title": "Image"
+      },
+      "ImageAltUpdate": {
+        "properties": {
+          "alt": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 300
+            },
+            "propertyNames": {
+              "examples": [
+                "de"
+              ]
+            },
+            "type": "object",
+            "title": "Alt"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "alt"
+        ],
+        "title": "ImageAltUpdate"
+      },
+      "ImageOrderIn": {
+        "properties": {
+          "image_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Image Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "image_ids"
+        ],
+        "title": "ImageOrderIn"
+      },
+      "ImageOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "product_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Product Id"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "title": "Size Bytes"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "alt": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Alt"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "product_id",
+          "key",
+          "url",
+          "content_type",
+          "width",
+          "height",
+          "size_bytes",
+          "position",
+          "alt",
+          "created_at"
+        ],
+        "title": "ImageOut"
+      },
+      "Link": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "href": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Href"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "href"
+        ],
+        "title": "Link"
+      },
+      "LocaleLink": {
+        "properties": {
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locale",
+          "path"
+        ],
+        "title": "LocaleLink"
+      },
+      "LoginIn": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 320,
+            "title": "Email",
+            "examples": [
+              "admin@example.com"
+            ]
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Password",
+            "examples": [
+              "admin-password-123"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginIn"
+      },
+      "MeOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "catalog_manager",
+              "site_editor"
+            ],
+            "title": "Role"
+          },
+          "website_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Website Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "role",
+          "website_ids"
+        ],
+        "title": "MeOut"
+      },
+      "MediaSettings": {
+        "properties": {
+          "base_url": {
+            "type": "string",
+            "title": "Base Url"
+          },
+          "transform_provider": {
+            "type": "string",
+            "enum": [
+              "none",
+              "cloudflare"
+            ],
+            "title": "Transform Provider"
+          }
+        },
+        "type": "object",
+        "required": [
+          "base_url",
+          "transform_provider"
+        ],
+        "title": "MediaSettings"
+      },
+      "NavItem": {
+        "properties": {
+          "page": {
+            "type": "string",
+            "enum": [
+              "home",
+              "products"
+            ],
+            "title": "Page"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page",
+          "label",
+          "path"
+        ],
+        "title": "NavItem"
+      },
+      "OpenGraph": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "image": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "website",
+              "product"
+            ],
+            "title": "Type"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "site_name": {
+            "type": "string",
+            "title": "Site Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "image",
+          "type",
+          "url",
+          "locale",
+          "site_name"
+        ],
+        "title": "OpenGraph"
+      },
+      "PageContent": {
+        "properties": {
+          "locale": {
+            "type": "string",
+            "title": "Locale",
+            "description": "Locale the content is in (may be the default locale)"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subtitle"
+          },
+          "blocks": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/HeroBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/TextBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/FeatureListBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/FeaturedProductsBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/CtaBlock"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "type",
+                "mapping": {
+                  "cta": "#/components/schemas/CtaBlock",
+                  "featured_products": "#/components/schemas/FeaturedProductsBlock",
+                  "features": "#/components/schemas/FeatureListBlock",
+                  "hero": "#/components/schemas/HeroBlock",
+                  "text": "#/components/schemas/TextBlock"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Blocks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locale",
+          "title",
+          "subtitle",
+          "blocks"
+        ],
+        "title": "PageContent"
+      },
+      "ProductAssignmentRef": {
+        "properties": {
+          "website_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Website Id"
+          },
+          "website_key": {
+            "type": "string",
+            "title": "Website Key"
+          },
+          "position": {
+            "type": "integer",
+            "title": "Position"
+          },
+          "is_visible": {
+            "type": "boolean",
+            "title": "Is Visible"
+          },
+          "is_featured": {
+            "type": "boolean",
+            "title": "Is Featured"
+          }
+        },
+        "type": "object",
+        "required": [
+          "website_id",
+          "website_key",
+          "position",
+          "is_visible",
+          "is_featured"
+        ],
+        "title": "ProductAssignmentRef"
+      },
+      "ProductCreate": {
+        "properties": {
+          "sku": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+            "title": "Sku",
+            "examples": [
+              "NH-CHAIR-OAK"
+            ]
+          },
+          "attributes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Attributes"
+          },
+          "translations": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/TranslationIn"
+            },
+            "propertyNames": {
+              "examples": [
+                "de"
+              ]
+            },
+            "type": "object",
+            "title": "Translations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sku"
+        ],
+        "title": "ProductCreate",
+        "examples": [
+          {
+            "attributes": {
+              "dimensions_cm": [
+                78,
+                82,
+                76
+              ],
+              "material": "oak"
+            },
+            "sku": "NH-CHAIR-OAK",
+            "translations": {
+              "de": {
+                "name": "Eichen-Loungesessel"
+              },
+              "en": {
+                "name": "Oak Lounge Chair"
+              }
+            }
+          }
+        ]
+      },
+      "ProductDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "sku": {
+            "type": "string",
+            "title": "Sku"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale",
+            "description": "Locale of the translation shown (may be the default)"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "short_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Short Description"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "is_featured": {
+            "type": "boolean",
+            "title": "Is Featured"
+          },
+          "image": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Image"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "attributes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Attributes",
+            "description": "Shared, language-neutral attributes"
+          },
+          "translated_attributes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Translated Attributes"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/Image"
+            },
+            "type": "array",
+            "title": "Images"
+          },
+          "canonical_path": {
+            "type": "string",
+            "title": "Canonical Path",
+            "description": "Differs from `path` when the product is shown in a fallback locale"
+          },
+          "alternates": {
+            "items": {
+              "$ref": "#/components/schemas/Alternate"
+            },
+            "type": "array",
+            "title": "Alternates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sku",
+          "locale",
+          "slug",
+          "name",
+          "short_description",
+          "path",
+          "is_featured",
+          "image",
+          "description",
+          "attributes",
+          "translated_attributes",
+          "images",
+          "canonical_path",
+          "alternates"
+        ],
+        "title": "ProductDetail"
+      },
+      "ProductList": {
+        "properties": {
+          "content": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PageContent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ProductSummary"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content",
+          "items",
+          "page",
+          "page_size",
+          "total",
+          "total_pages"
+        ],
+        "title": "ProductList"
+      },
+      "ProductListItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "sku": {
+            "type": "string",
+            "title": "Sku"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "names": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Names"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sku",
+          "status",
+          "names",
+          "updated_at"
+        ],
+        "title": "ProductListItem"
+      },
+      "ProductOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "sku": {
+            "type": "string",
+            "title": "Sku"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "attributes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Attributes"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "translations": {
+            "items": {
+              "$ref": "#/components/schemas/TranslationOut"
+            },
+            "type": "array",
+            "title": "Translations"
+          },
+          "websites": {
+            "items": {
+              "$ref": "#/components/schemas/ProductAssignmentRef"
+            },
+            "type": "array",
+            "title": "Websites"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sku",
+          "status",
+          "attributes",
+          "created_at",
+          "updated_at",
+          "translations",
+          "websites"
+        ],
+        "title": "ProductOut"
+      },
+      "ProductPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ProductListItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size"
+        ],
+        "title": "ProductPage"
+      },
+      "ProductSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "sku": {
+            "type": "string",
+            "title": "Sku"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale",
+            "description": "Locale of the translation shown (may be the default)"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "short_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Short Description"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "is_featured": {
+            "type": "boolean",
+            "title": "Is Featured"
+          },
+          "image": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Image"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sku",
+          "locale",
+          "slug",
+          "name",
+          "short_description",
+          "path",
+          "is_featured",
+          "image"
+        ],
+        "title": "ProductSummary"
+      },
+      "ProductUpdate": {
+        "properties": {
+          "sku": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+                "examples": [
+                  "NH-CHAIR-OAK"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sku"
+          },
+          "attributes": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attributes"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "archived"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ProductUpdate",
+        "examples": [
+          {
+            "attributes": {
+              "finish": "oiled",
+              "material": "oak"
+            }
+          }
+        ]
+      },
+      "PublishJobOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "website_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Website Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Paths"
+          },
+          "full_site": {
+            "type": "boolean",
+            "title": "Full Site"
+          },
+          "content_version": {
+            "type": "integer",
+            "title": "Content Version"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "run_after": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Run After"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "website_id",
+          "status",
+          "tags",
+          "paths",
+          "full_site",
+          "content_version",
+          "attempts",
+          "run_after",
+          "last_error",
+          "created_at",
+          "started_at",
+          "finished_at"
+        ],
+        "title": "PublishJobOut"
+      },
+      "ReorderIn": {
+        "properties": {
+          "product_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 5000,
+            "minItems": 1,
+            "title": "Product Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "product_ids"
+        ],
+        "title": "ReorderIn"
+      },
+      "ResolvedHost": {
+        "properties": {
+          "website_key": {
+            "type": "string",
+            "title": "Website Key"
+          },
+          "website_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Website Id"
+          },
+          "hostname": {
+            "type": "string",
+            "title": "Hostname"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale",
+            "description": "The website's default locale"
+          },
+          "locales": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Locales"
+          },
+          "primary_host": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Host"
+          },
+          "redirect": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Redirect",
+            "description": "Absolute origin to 301-redirect to when the host is a redirecting alias"
+          },
+          "content_version": {
+            "type": "integer",
+            "title": "Content Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "website_key",
+          "website_id",
+          "hostname",
+          "locale",
+          "locales",
+          "primary_host",
+          "redirect",
+          "content_version"
+        ],
+        "title": "ResolvedHost"
+      },
+      "Seo": {
+        "properties": {
+          "page": {
+            "type": "string",
+            "enum": [
+              "home",
+              "products",
+              "product"
+            ],
+            "title": "Page"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "canonical": {
+            "type": "string",
+            "title": "Canonical"
+          },
+          "robots": {
+            "type": "string",
+            "title": "Robots"
+          },
+          "og": {
+            "$ref": "#/components/schemas/OpenGraph"
+          },
+          "alternates": {
+            "items": {
+              "$ref": "#/components/schemas/Alternate"
+            },
+            "type": "array",
+            "title": "Alternates"
+          },
+          "json_ld": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Json Ld"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page",
+          "locale",
+          "path",
+          "title",
+          "description",
+          "canonical",
+          "robots",
+          "og",
+          "alternates",
+          "json_ld"
+        ],
+        "title": "Seo"
+      },
+      "SeoFields": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "canonical_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^https://"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canonical Url"
+          },
+          "og_title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Og Title"
+          },
+          "og_description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Og Description"
+          },
+          "og_image_key": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Og Image Key"
+          },
+          "robots": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z-]+(,\\s*[a-z-]+(:[\\w-]+)?)*$",
+            "title": "Robots",
+            "default": "index,follow"
+          },
+          "structured_data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structured Data"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SeoFields",
+        "examples": [
+          {
+            "description": "Langlebige Möbel aus natürlichen Materialien.",
+            "robots": "index,follow",
+            "title": "Nordic Home | Skandinavische Möbel"
+          }
+        ]
+      },
+      "SeoOut": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "canonical_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^https://"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canonical Url"
+          },
+          "og_title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Og Title"
+          },
+          "og_description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Og Description"
+          },
+          "og_image_key": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Og Image Key"
+          },
+          "robots": {
+            "type": "string",
+            "maxLength": 100,
+            "pattern": "^[a-z-]+(,\\s*[a-z-]+(:[\\w-]+)?)*$",
+            "title": "Robots",
+            "default": "index,follow"
+          },
+          "structured_data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structured Data"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "page": {
+            "type": "string",
+            "title": "Page"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "page",
+          "locale",
+          "product_id",
+          "updated_at"
+        ],
+        "title": "SeoOut",
+        "examples": [
+          {
+            "description": "Langlebige Möbel aus natürlichen Materialien.",
+            "robots": "index,follow",
+            "title": "Nordic Home | Skandinavische Möbel"
+          }
+        ]
+      },
+      "SiteConfig": {
+        "properties": {
+          "site": {
+            "$ref": "#/components/schemas/SiteInfo"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "theme": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Theme"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "nav": {
+            "items": {
+              "$ref": "#/components/schemas/NavItem"
+            },
+            "type": "array",
+            "title": "Nav"
+          },
+          "locale_links": {
+            "items": {
+              "$ref": "#/components/schemas/LocaleLink"
+            },
+            "type": "array",
+            "title": "Locale Links",
+            "description": "Language switcher: home path per locale"
+          },
+          "media": {
+            "$ref": "#/components/schemas/MediaSettings"
+          },
+          "content_version": {
+            "type": "integer",
+            "title": "Content Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "site",
+          "locale",
+          "theme",
+          "nav",
+          "locale_links",
+          "media",
+          "content_version"
+        ],
+        "title": "SiteConfig"
+      },
+      "SiteHost": {
+        "properties": {
+          "hostname": {
+            "type": "string",
+            "title": "Hostname"
+          },
+          "is_primary": {
+            "type": "boolean",
+            "title": "Is Primary"
+          },
+          "redirect_to_primary": {
+            "type": "boolean",
+            "title": "Redirect To Primary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hostname",
+          "is_primary",
+          "redirect_to_primary"
+        ],
+        "title": "SiteHost"
+      },
+      "SiteInfo": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "country_code": {
+            "type": "string",
+            "title": "Country Code"
+          },
+          "default_locale": {
+            "type": "string",
+            "title": "Default Locale"
+          },
+          "locales": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Locales"
+          },
+          "primary_host": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Host"
+          },
+          "base_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "name",
+          "country_code",
+          "default_locale",
+          "locales",
+          "primary_host",
+          "base_url"
+        ],
+        "title": "SiteInfo"
+      },
+      "SiteList": {
+        "properties": {
+          "sites": {
+            "items": {
+              "$ref": "#/components/schemas/SiteListItem"
+            },
+            "type": "array",
+            "title": "Sites"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sites"
+        ],
+        "title": "SiteList"
+      },
+      "SiteListItem": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "default_locale": {
+            "type": "string",
+            "title": "Default Locale"
+          },
+          "locales": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Locales"
+          },
+          "primary_host": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Host"
+          },
+          "content_version": {
+            "type": "integer",
+            "title": "Content Version"
+          },
+          "hosts": {
+            "items": {
+              "$ref": "#/components/schemas/SiteHost"
+            },
+            "type": "array",
+            "title": "Hosts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "id",
+          "name",
+          "default_locale",
+          "locales",
+          "primary_host",
+          "content_version",
+          "hosts"
+        ],
+        "title": "SiteListItem"
+      },
+      "Sitemap": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/SitemapEntry"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entries"
+        ],
+        "title": "Sitemap"
+      },
+      "SitemapEntry": {
+        "properties": {
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "loc": {
+            "type": "string",
+            "title": "Loc"
+          },
+          "lastmod": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lastmod"
+          },
+          "alternates": {
+            "items": {
+              "$ref": "#/components/schemas/Alternate"
+            },
+            "type": "array",
+            "title": "Alternates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locale",
+          "path",
+          "loc",
+          "lastmod",
+          "alternates"
+        ],
+        "title": "SitemapEntry"
+      },
+      "TextBlock": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "text",
+            "title": "Type",
+            "default": "text"
+          },
+          "heading": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heading"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Body",
+            "description": "Sanitized HTML"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "title": "TextBlock"
+      },
+      "Theme": {
+        "properties": {
+          "tokens": {
+            "$ref": "#/components/schemas/ThemeTokens"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "logo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Asset"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "logo_dark": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Asset"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "favicon": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Asset"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "og_default_image": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Asset"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "tokens",
+          "version",
+          "logo",
+          "logo_dark",
+          "favicon",
+          "og_default_image"
+        ],
+        "title": "Theme"
+      },
+      "ThemeColors": {
+        "properties": {
+          "primary": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+            "title": "Primary"
+          },
+          "primary_foreground": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+            "title": "Primary Foreground"
+          },
+          "secondary": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+            "title": "Secondary"
+          },
+          "accent": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+            "title": "Accent"
+          },
+          "background": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+            "title": "Background"
+          },
+          "foreground": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+            "title": "Foreground"
+          },
+          "muted": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+            "title": "Muted"
+          },
+          "border": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$",
+            "title": "Border"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "primary",
+          "primary_foreground",
+          "secondary",
+          "accent",
+          "background",
+          "foreground",
+          "muted",
+          "border"
+        ],
+        "title": "ThemeColors"
+      },
+      "ThemeFont": {
+        "properties": {
+          "family": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Family"
+          },
+          "weights": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Weights"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "google",
+              "system",
+              "self_hosted"
+            ],
+            "title": "Source",
+            "default": "google"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "family"
+        ],
+        "title": "ThemeFont"
+      },
+      "ThemeFonts": {
+        "properties": {
+          "heading": {
+            "$ref": "#/components/schemas/ThemeFont"
+          },
+          "body": {
+            "$ref": "#/components/schemas/ThemeFont"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "heading",
+          "body"
+        ],
+        "title": "ThemeFonts"
+      },
+      "ThemeOut": {
+        "properties": {
+          "tokens": {
+            "$ref": "#/components/schemas/ThemeTokens"
+          },
+          "logo_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Key"
+          },
+          "logo_dark_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Dark Key"
+          },
+          "favicon_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Favicon Key"
+          },
+          "og_default_image_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Og Default Image Key"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tokens",
+          "logo_key",
+          "logo_dark_key",
+          "favicon_key",
+          "og_default_image_key",
+          "version",
+          "updated_at"
+        ],
+        "title": "ThemeOut"
+      },
+      "ThemeTokens": {
+        "properties": {
+          "colors": {
+            "$ref": "#/components/schemas/ThemeColors"
+          },
+          "fonts": {
+            "$ref": "#/components/schemas/ThemeFonts"
+          },
+          "radius": {
+            "type": "string",
+            "enum": [
+              "none",
+              "sm",
+              "md",
+              "lg",
+              "full"
+            ],
+            "title": "Radius",
+            "default": "md"
+          },
+          "header_style": {
+            "type": "string",
+            "enum": [
+              "minimal",
+              "centered",
+              "split"
+            ],
+            "title": "Header Style",
+            "default": "minimal"
+          },
+          "product_card_style": {
+            "type": "string",
+            "enum": [
+              "plain",
+              "bordered",
+              "elevated"
+            ],
+            "title": "Product Card Style",
+            "default": "bordered"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "colors",
+          "fonts"
+        ],
+        "title": "ThemeTokens"
+      },
+      "ThemeUpdate": {
+        "properties": {
+          "tokens": {
+            "$ref": "#/components/schemas/ThemeTokens"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tokens"
+        ],
+        "title": "ThemeUpdate",
+        "examples": [
+          {
+            "tokens": {
+              "colors": {
+                "accent": "#2563EB",
+                "background": "#FFFFFF",
+                "border": "#E5E7EB",
+                "foreground": "#111827",
+                "muted": "#6B7280",
+                "primary": "#111827",
+                "primary_foreground": "#FFFFFF",
+                "secondary": "#F3F4F6"
+              },
+              "fonts": {
+                "body": {
+                  "family": "Inter"
+                },
+                "heading": {
+                  "family": "Inter"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TokenOut": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "const": "bearer",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "expires_in",
+          "expires_at"
+        ],
+        "title": "TokenOut"
+      },
+      "TranslationIn": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug",
+            "description": "Derived from `name` when omitted"
+          },
+          "short_description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Short Description"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "attributes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Attributes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "TranslationIn",
+        "examples": [
+          {
+            "attributes": {
+              "care": "Mit Öl pflegen"
+            },
+            "description": "<p>Massive Eiche, von Hand geölt.</p>",
+            "name": "Eichen-Loungesessel",
+            "short_description": "In Skandinavien entworfen."
+          }
+        ]
+      },
+      "TranslationOut": {
+        "properties": {
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "slug": {
+            "type": "string",
+            "title": "Slug"
+          },
+          "short_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Short Description"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "attributes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Attributes"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locale",
+          "name",
+          "slug",
+          "short_description",
+          "description",
+          "attributes",
+          "updated_at"
+        ],
+        "title": "TranslationOut"
+      },
+      "UserCreate": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 320,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 12,
+            "title": "Password"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "catalog_manager",
+              "site_editor"
+            ],
+            "title": "Role"
+          },
+          "website_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Website Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "role"
+        ],
+        "title": "UserCreate",
+        "examples": [
+          {
+            "email": "editor@example.com",
+            "password": "a-long-password-123",
+            "role": "site_editor",
+            "website_ids": [
+              "01a1cbcf-db46-7e02-916e-4880d2a1b5c7"
+            ]
+          }
+        ]
+      },
+      "UserOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "catalog_manager",
+              "site_editor"
+            ],
+            "title": "Role"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "last_login_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Login At"
+          },
+          "locked_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locked Until"
+          },
+          "website_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Website Ids"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "role",
+          "is_active",
+          "last_login_at",
+          "locked_until",
+          "website_ids",
+          "created_at"
+        ],
+        "title": "UserOut"
+      },
+      "UserUpdate": {
+        "properties": {
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "admin",
+                  "catalog_manager",
+                  "site_editor"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "UserUpdate"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WebsiteCreate": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[a-z0-9](?:[a-z0-9-]{0,48}[a-z0-9])?$",
+            "title": "Key",
+            "examples": [
+              "nordic-home-at"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "country_code": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$",
+            "title": "Country Code"
+          },
+          "default_locale": {
+            "type": "string",
+            "title": "Default Locale",
+            "examples": [
+              "de"
+            ]
+          },
+          "locales": {
+            "items": {
+              "type": "string",
+              "examples": [
+                "de"
+              ]
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Locales"
+          },
+          "auto_publish": {
+            "type": "boolean",
+            "title": "Auto Publish",
+            "default": true
+          },
+          "theme": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ThemeTokens"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "key",
+          "name",
+          "country_code",
+          "default_locale",
+          "locales"
+        ],
+        "title": "WebsiteCreate",
+        "examples": [
+          {
+            "auto_publish": true,
+            "country_code": "AT",
+            "default_locale": "de",
+            "key": "nordic-home-at",
+            "locales": [
+              "de",
+              "en"
+            ],
+            "name": "Nordic Home Österreich"
+          }
+        ]
+      },
+      "WebsiteOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "country_code": {
+            "type": "string",
+            "title": "Country Code"
+          },
+          "default_locale": {
+            "type": "string",
+            "title": "Default Locale"
+          },
+          "locales": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Locales"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "auto_publish": {
+            "type": "boolean",
+            "title": "Auto Publish"
+          },
+          "content_version": {
+            "type": "integer",
+            "title": "Content Version"
+          },
+          "published_version": {
+            "type": "integer",
+            "title": "Published Version"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "primary_host": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Host"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "has_unpublished_changes": {
+            "type": "boolean",
+            "title": "Has Unpublished Changes",
+            "readOnly": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "key",
+          "name",
+          "country_code",
+          "default_locale",
+          "locales",
+          "status",
+          "auto_publish",
+          "content_version",
+          "published_version",
+          "published_at",
+          "created_at",
+          "updated_at",
+          "has_unpublished_changes"
+        ],
+        "title": "WebsiteOut"
+      },
+      "WebsiteUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "country_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z]{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country Code"
+          },
+          "default_locale": {
+            "anyOf": [
+              {
+                "type": "string",
+                "examples": [
+                  "de"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Locale"
+          },
+          "locales": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "examples": [
+                    "de"
+                  ]
+                },
+                "type": "array",
+                "maxItems": 20,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locales"
+          },
+          "auto_publish": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Auto Publish"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "WebsiteUpdate",
+        "description": "Partial update. `key` is immutable (it is the public cache/URL identifier).",
+        "examples": [
+          {
+            "locales": [
+              "de",
+              "en"
+            ],
+            "name": "Nordic Home Austria"
+          }
+        ]
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "description": "Access token from POST /admin/v1/auth/login",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "health",
+      "description": "Liveness and readiness probes."
+    },
+    {
+      "name": "public",
+      "description": "Read-only, CDN-cacheable site content for static generation. Responses carry `ETag` + `Cache-Control`; send `If-None-Match` to get 304s."
+    }
+  ]
+}

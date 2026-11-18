@@ -1,0 +1,96 @@
+{
+  "locale": "de",
+  "title": "Skandinavisches Design für Ihr Zuhause",
+  "subtitle": "Langlebige Möbel aus natürlichen Materialien.",
+  "blocks": [
+    {
+      "type": "hero",
+      "heading": "Zeitlos wohnen",
+      "subheading": "Langlebige Möbel aus natürlichen Materialien.",
+      "image_key": null,
+      "cta": {
+        "label": "Alle Produkte ansehen",
+        "href": "/products"
+      }
+    },
+    {
+      "type": "featured_products",
+      "heading": "Beliebte Stücke",
+      "limit": 3
+    },
+    {
+      "type": "features",
+      "heading": null,
+      "items": [
+        {
+          "title": "Massives Holz",
+          "description": "Nur zertifizierte Hölzer.",
+          "icon": null
+        },
+        {
+          "title": "Handgefertigt",
+          "description": "In kleinen Werkstätten gefertigt.",
+          "icon": null
+        },
+        {
+          "title": "10 Jahre Garantie",
+          "description": "Gebaut für Generationen.",
+          "icon": null
+        }
+      ]
+    }
+  ],
+  "featured_products": [
+    {
+      "id": "01a1cbcf-db2b-7b64-86b9-1e3a0e8b54b3",
+      "sku": "NH-CHAIR-OAK",
+      "locale": "de",
+      "slug": "eichen-loungesessel",
+      "name": "Eichen-Loungesessel",
+      "short_description": "Eichen-Loungesessel: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/eichen-loungesessel",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-chair-oak.webp",
+        "url": "/mock-media/seed/products/nh-chair-oak.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Eichen-Loungesessel"
+      }
+    },
+    {
+      "id": "01a1cbcf-db30-7bca-9007-570a20cf98e8",
+      "sku": "NH-TABLE-ASH",
+      "locale": "de",
+      "slug": "esstisch-aus-esche",
+      "name": "Esstisch aus Esche",
+      "short_description": "Esstisch aus Esche: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/esstisch-aus-esche",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-table-ash.webp",
+        "url": "/mock-media/seed/products/nh-table-ash.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Esstisch aus Esche"
+      }
+    },
+    {
+      "id": "01a1cbcf-db32-70c7-97a3-f9ed94d2b832",
+      "sku": "NH-LAMP-LINEN",
+      "locale": "de",
+      "slug": "stehleuchte-mit-leinenschirm",
+      "name": "Stehleuchte mit Leinenschirm",
+      "short_description": "Stehleuchte mit Leinenschirm: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/stehleuchte-mit-leinenschirm",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-lamp-linen.webp",
+        "url": "/mock-media/seed/products/nh-lamp-linen.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Stehleuchte mit Leinenschirm"
+      }
+    }
+  ]
+}

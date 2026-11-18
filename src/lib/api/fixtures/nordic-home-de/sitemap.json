@@ -1,0 +1,404 @@
+{
+  "entries": [
+    {
+      "locale": "de",
+      "path": "/",
+      "loc": "https://nordic-home-de.localhost/",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/"
+        }
+      ]
+    },
+    {
+      "locale": "de",
+      "path": "/products",
+      "loc": "https://nordic-home-de.localhost/products",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products"
+        }
+      ]
+    },
+    {
+      "locale": "de",
+      "path": "/products/barhocker-aus-nussbaum",
+      "loc": "https://nordic-home-de.localhost/products/barhocker-aus-nussbaum",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/barhocker-aus-nussbaum"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/walnut-bar-stool"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/barhocker-aus-nussbaum"
+        }
+      ]
+    },
+    {
+      "locale": "de",
+      "path": "/products/bettgestell-aus-birke",
+      "loc": "https://nordic-home-de.localhost/products/bettgestell-aus-birke",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/bettgestell-aus-birke"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/birch-bed-frame"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/bettgestell-aus-birke"
+        }
+      ]
+    },
+    {
+      "locale": "de",
+      "path": "/products/dreisitzer-sofa-aus-wolle",
+      "loc": "https://nordic-home-de.localhost/products/dreisitzer-sofa-aus-wolle",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/dreisitzer-sofa-aus-wolle"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/wool-three-seat-sofa"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/dreisitzer-sofa-aus-wolle"
+        }
+      ]
+    },
+    {
+      "locale": "de",
+      "path": "/products/eichen-loungesessel",
+      "loc": "https://nordic-home-de.localhost/products/eichen-loungesessel",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/eichen-loungesessel"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/oak-lounge-chair"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/eichen-loungesessel"
+        }
+      ]
+    },
+    {
+      "locale": "de",
+      "path": "/products/esstisch-aus-esche",
+      "loc": "https://nordic-home-de.localhost/products/esstisch-aus-esche",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/esstisch-aus-esche"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/ash-dining-table"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/esstisch-aus-esche"
+        }
+      ]
+    },
+    {
+      "locale": "de",
+      "path": "/products/stehleuchte-mit-leinenschirm",
+      "loc": "https://nordic-home-de.localhost/products/stehleuchte-mit-leinenschirm",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/stehleuchte-mit-leinenschirm"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/linen-floor-lamp"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/stehleuchte-mit-leinenschirm"
+        }
+      ]
+    },
+    {
+      "locale": "de",
+      "path": "/products/teppich-aus-jute",
+      "loc": "https://nordic-home-de.localhost/products/teppich-aus-jute",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/teppich-aus-jute"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/jute-area-rug"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/teppich-aus-jute"
+        }
+      ]
+    },
+    {
+      "locale": "de",
+      "path": "/products/wandregal-aus-kiefer",
+      "loc": "https://nordic-home-de.localhost/products/wandregal-aus-kiefer",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/wandregal-aus-kiefer"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/pine-wall-shelf"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/wandregal-aus-kiefer"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "path": "/en",
+      "loc": "https://nordic-home-de.localhost/en",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "path": "/en/products",
+      "loc": "https://nordic-home-de.localhost/en/products",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "path": "/en/products/ash-dining-table",
+      "loc": "https://nordic-home-de.localhost/en/products/ash-dining-table",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/esstisch-aus-esche"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/ash-dining-table"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/esstisch-aus-esche"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "path": "/en/products/birch-bed-frame",
+      "loc": "https://nordic-home-de.localhost/en/products/birch-bed-frame",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/bettgestell-aus-birke"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/birch-bed-frame"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/bettgestell-aus-birke"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "path": "/en/products/jute-area-rug",
+      "loc": "https://nordic-home-de.localhost/en/products/jute-area-rug",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/teppich-aus-jute"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/jute-area-rug"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/teppich-aus-jute"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "path": "/en/products/linen-floor-lamp",
+      "loc": "https://nordic-home-de.localhost/en/products/linen-floor-lamp",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/stehleuchte-mit-leinenschirm"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/linen-floor-lamp"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/stehleuchte-mit-leinenschirm"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "path": "/en/products/oak-lounge-chair",
+      "loc": "https://nordic-home-de.localhost/en/products/oak-lounge-chair",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/eichen-loungesessel"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/oak-lounge-chair"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/eichen-loungesessel"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "path": "/en/products/pine-wall-shelf",
+      "loc": "https://nordic-home-de.localhost/en/products/pine-wall-shelf",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/wandregal-aus-kiefer"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/pine-wall-shelf"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/wandregal-aus-kiefer"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "path": "/en/products/walnut-bar-stool",
+      "loc": "https://nordic-home-de.localhost/en/products/walnut-bar-stool",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/barhocker-aus-nussbaum"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/walnut-bar-stool"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/barhocker-aus-nussbaum"
+        }
+      ]
+    },
+    {
+      "locale": "en",
+      "path": "/en/products/wool-three-seat-sofa",
+      "loc": "https://nordic-home-de.localhost/en/products/wool-three-seat-sofa",
+      "lastmod": "2026-11-12T11:06:15.034791Z",
+      "alternates": [
+        {
+          "hreflang": "de-DE",
+          "href": "https://nordic-home-de.localhost/products/dreisitzer-sofa-aus-wolle"
+        },
+        {
+          "hreflang": "en-DE",
+          "href": "https://nordic-home-de.localhost/en/products/wool-three-seat-sofa"
+        },
+        {
+          "hreflang": "x-default",
+          "href": "https://nordic-home-de.localhost/products/dreisitzer-sofa-aus-wolle"
+        }
+      ]
+    }
+  ]
+}

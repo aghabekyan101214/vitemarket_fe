@@ -1,0 +1,28 @@
+{
+  "page": "products",
+  "locale": "fr",
+  "path": "/products",
+  "title": "Produits | Nordic Home France",
+  "description": "Des meubles durables en matériaux naturels.",
+  "canonical": "https://nordic-home-fr.localhost/products",
+  "robots": "index,follow",
+  "og": {
+    "title": "Produits | Nordic Home France",
+    "description": "Des meubles durables en matériaux naturels.",
+    "image": null,
+    "type": "website",
+    "url": "https://nordic-home-fr.localhost/products",
+    "locale": "fr_FR",
+    "site_name": "Nordic Home France"
+  },
+  "alternates": [],
+  "json_ld": [
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Produits | Nordic Home France",
+      "inLanguage": "fr",
+      "url": "https://nordic-home-fr.localhost/products"
+    }
+  ]
+}

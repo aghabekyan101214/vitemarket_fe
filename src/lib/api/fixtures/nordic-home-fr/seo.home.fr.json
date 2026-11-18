@@ -1,0 +1,28 @@
+{
+  "page": "home",
+  "locale": "fr",
+  "path": "/",
+  "title": "Nordic Home France | Le design scandinave pour votre intérieur",
+  "description": "Des meubles durables en matériaux naturels.",
+  "canonical": "https://nordic-home-fr.localhost/",
+  "robots": "index,follow",
+  "og": {
+    "title": "Nordic Home France | Le design scandinave pour votre intérieur",
+    "description": "Des meubles durables en matériaux naturels.",
+    "image": null,
+    "type": "website",
+    "url": "https://nordic-home-fr.localhost/",
+    "locale": "fr_FR",
+    "site_name": "Nordic Home France"
+  },
+  "alternates": [],
+  "json_ld": [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Nordic Home France",
+      "inLanguage": "fr",
+      "url": "https://nordic-home-fr.localhost/"
+    }
+  ]
+}

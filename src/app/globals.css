@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/*
+ * Per-site values arrive as --site-* custom properties from <ThemeStyle> (validated in
+ * lib/theme/css-vars.ts). These defaults mirror the backend DEFAULT_THEME.
+ */
+:root {
+  --site-primary: #111827;
+  --site-primary-foreground: #ffffff;
+  --site-secondary: #f3f4f6;
+  --site-accent: #2563eb;
+  --site-background: #ffffff;
+  --site-foreground: #111827;
+  --site-muted: #6b7280;
+  --site-border: #e5e7eb;
+  --site-radius: 0.5rem;
+  --site-font-heading: ui-sans-serif, system-ui, sans-serif;
+  --site-font-body: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Theme tokens → Tailwind utilities: bg-primary, text-muted, rounded-site, font-heading … */
+@theme inline {
+  --color-primary: var(--site-primary);
+  --color-primary-foreground: var(--site-primary-foreground);
+  --color-secondary: var(--site-secondary);
+  --color-accent: var(--site-accent);
+  --color-background: var(--site-background);
+  --color-foreground: var(--site-foreground);
+  --color-muted: var(--site-muted);
+  --color-border: var(--site-border);
+  --radius-site: var(--site-radius);
+  --font-heading: var(--site-font-heading);
+  --font-sans: var(--site-font-body);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background-color: var(--site-background);
+    color: var(--site-foreground);
+  }
+  :focus-visible {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Backend-sanitized rich text (TextBlock.body). */
+@layer components {
+  .rich-text {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+  .rich-text > * + * {
+    margin-top: 1em;
+  }
+  .rich-text h2,
+  .rich-text h3,
+  .rich-text h4 {
+    font-family: var(--site-font-heading);
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 1.6em;
+  }
+  .rich-text h2 { font-size: 1.5rem; }
+  .rich-text h3 { font-size: 1.25rem; }
+  .rich-text a {
+    color: var(--site-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .rich-text ul { list-style: disc; padding-left: 1.5em; }
+  .rich-text ol { list-style: decimal; padding-left: 1.5em; }
+  .rich-text blockquote {
+    border-left: 3px solid var(--site-border);
+    padding-left: 1em;
+    color: var(--site-muted);
+  }
+}

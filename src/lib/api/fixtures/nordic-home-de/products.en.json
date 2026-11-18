@@ -1,0 +1,150 @@
+{
+  "content": {
+    "locale": "en",
+    "title": "Products",
+    "subtitle": null,
+    "blocks": []
+  },
+  "items": [
+    {
+      "id": "01a1cbcf-db2b-7b64-86b9-1e3a0e8b54b3",
+      "sku": "NH-CHAIR-OAK",
+      "locale": "en",
+      "slug": "oak-lounge-chair",
+      "name": "Oak Lounge Chair",
+      "short_description": "Oak Lounge Chair: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/oak-lounge-chair",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-chair-oak.webp",
+        "url": "/mock-media/seed/products/nh-chair-oak.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Oak Lounge Chair"
+      }
+    },
+    {
+      "id": "01a1cbcf-db30-7bca-9007-570a20cf98e8",
+      "sku": "NH-TABLE-ASH",
+      "locale": "en",
+      "slug": "ash-dining-table",
+      "name": "Ash Dining Table",
+      "short_description": "Ash Dining Table: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/ash-dining-table",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-table-ash.webp",
+        "url": "/mock-media/seed/products/nh-table-ash.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Ash Dining Table"
+      }
+    },
+    {
+      "id": "01a1cbcf-db32-70c7-97a3-f9ed94d2b832",
+      "sku": "NH-LAMP-LINEN",
+      "locale": "en",
+      "slug": "linen-floor-lamp",
+      "name": "Linen Floor Lamp",
+      "short_description": "Linen Floor Lamp: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/linen-floor-lamp",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-lamp-linen.webp",
+        "url": "/mock-media/seed/products/nh-lamp-linen.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Linen Floor Lamp"
+      }
+    },
+    {
+      "id": "01a1cbcf-db33-73cb-8f48-e379b193e267",
+      "sku": "NH-SOFA-WOOL",
+      "locale": "en",
+      "slug": "wool-three-seat-sofa",
+      "name": "Wool Three-Seat Sofa",
+      "short_description": "Wool Three-Seat Sofa: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/wool-three-seat-sofa",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-sofa-wool.webp",
+        "url": "/mock-media/seed/products/nh-sofa-wool.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Wool Three-Seat Sofa"
+      }
+    },
+    {
+      "id": "01a1cbcf-db34-7981-a4f4-69c7269a1510",
+      "sku": "NH-SHELF-PINE",
+      "locale": "en",
+      "slug": "pine-wall-shelf",
+      "name": "Pine Wall Shelf",
+      "short_description": "Pine Wall Shelf: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/pine-wall-shelf",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-shelf-pine.webp",
+        "url": "/mock-media/seed/products/nh-shelf-pine.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Pine Wall Shelf"
+      }
+    },
+    {
+      "id": "01a1cbcf-db36-7420-af08-1a973140ff22",
+      "sku": "NH-RUG-JUTE",
+      "locale": "en",
+      "slug": "jute-area-rug",
+      "name": "Jute Area Rug",
+      "short_description": "Jute Area Rug: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/jute-area-rug",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-rug-jute.webp",
+        "url": "/mock-media/seed/products/nh-rug-jute.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Jute Area Rug"
+      }
+    },
+    {
+      "id": "01a1cbcf-db37-762e-84e1-bf0650a1deac",
+      "sku": "NH-BED-BIRCH",
+      "locale": "en",
+      "slug": "birch-bed-frame",
+      "name": "Birch Bed Frame",
+      "short_description": "Birch Bed Frame: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/birch-bed-frame",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-bed-birch.webp",
+        "url": "/mock-media/seed/products/nh-bed-birch.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Birch Bed Frame"
+      }
+    },
+    {
+      "id": "01a1cbcf-db38-7997-8ece-216d59f51a3f",
+      "sku": "NH-STOOL-WALNUT",
+      "locale": "en",
+      "slug": "walnut-bar-stool",
+      "name": "Walnut Bar Stool",
+      "short_description": "Walnut Bar Stool: designed in Scandinavia, built to last for decades.",
+      "path": "/en/products/walnut-bar-stool",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-stool-walnut.webp",
+        "url": "/mock-media/seed/products/nh-stool-walnut.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Walnut Bar Stool"
+      }
+    }
+  ],
+  "page": 1,
+  "page_size": 100,
+  "total": 8,
+  "total_pages": 1
+}

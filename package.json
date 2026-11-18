@@ -1,0 +1,44 @@
+{
+  "name": "showcase-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "gen:types": "sh scripts/export-openapi.sh",
+    "check:types": "sh scripts/export-openapi.sh && git diff --exit-code -- openapi.json src/types/api.generated.ts",
+    "fixtures:record": "node scripts/record-fixtures.ts",
+    "warmup": "node scripts/warmup.ts"
+  },
+  "dependencies": {
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "0.0.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.65.0",
+    "@tailwindcss/postcss": "4.3.5",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "10.14.0",
+    "eslint-config-next": "16.4.6",
+    "openapi-typescript": "7.13.0",
+    "postcss": "8.5.32",
+    "tailwindcss": "4.3.5",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0"
+  }
+}

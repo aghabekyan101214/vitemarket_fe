@@ -1,0 +1,150 @@
+{
+  "content": {
+    "locale": "de",
+    "title": "Produkte",
+    "subtitle": null,
+    "blocks": []
+  },
+  "items": [
+    {
+      "id": "01a1cbcf-db2b-7b64-86b9-1e3a0e8b54b3",
+      "sku": "NH-CHAIR-OAK",
+      "locale": "de",
+      "slug": "eichen-loungesessel",
+      "name": "Eichen-Loungesessel",
+      "short_description": "Eichen-Loungesessel: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/eichen-loungesessel",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-chair-oak.webp",
+        "url": "/mock-media/seed/products/nh-chair-oak.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Eichen-Loungesessel"
+      }
+    },
+    {
+      "id": "01a1cbcf-db30-7bca-9007-570a20cf98e8",
+      "sku": "NH-TABLE-ASH",
+      "locale": "de",
+      "slug": "esstisch-aus-esche",
+      "name": "Esstisch aus Esche",
+      "short_description": "Esstisch aus Esche: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/esstisch-aus-esche",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-table-ash.webp",
+        "url": "/mock-media/seed/products/nh-table-ash.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Esstisch aus Esche"
+      }
+    },
+    {
+      "id": "01a1cbcf-db32-70c7-97a3-f9ed94d2b832",
+      "sku": "NH-LAMP-LINEN",
+      "locale": "de",
+      "slug": "stehleuchte-mit-leinenschirm",
+      "name": "Stehleuchte mit Leinenschirm",
+      "short_description": "Stehleuchte mit Leinenschirm: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/stehleuchte-mit-leinenschirm",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-lamp-linen.webp",
+        "url": "/mock-media/seed/products/nh-lamp-linen.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Stehleuchte mit Leinenschirm"
+      }
+    },
+    {
+      "id": "01a1cbcf-db33-73cb-8f48-e379b193e267",
+      "sku": "NH-SOFA-WOOL",
+      "locale": "de",
+      "slug": "dreisitzer-sofa-aus-wolle",
+      "name": "Dreisitzer-Sofa aus Wolle",
+      "short_description": "Dreisitzer-Sofa aus Wolle: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/dreisitzer-sofa-aus-wolle",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-sofa-wool.webp",
+        "url": "/mock-media/seed/products/nh-sofa-wool.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Dreisitzer-Sofa aus Wolle"
+      }
+    },
+    {
+      "id": "01a1cbcf-db34-7981-a4f4-69c7269a1510",
+      "sku": "NH-SHELF-PINE",
+      "locale": "de",
+      "slug": "wandregal-aus-kiefer",
+      "name": "Wandregal aus Kiefer",
+      "short_description": "Wandregal aus Kiefer: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/wandregal-aus-kiefer",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-shelf-pine.webp",
+        "url": "/mock-media/seed/products/nh-shelf-pine.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Wandregal aus Kiefer"
+      }
+    },
+    {
+      "id": "01a1cbcf-db36-7420-af08-1a973140ff22",
+      "sku": "NH-RUG-JUTE",
+      "locale": "de",
+      "slug": "teppich-aus-jute",
+      "name": "Teppich aus Jute",
+      "short_description": "Teppich aus Jute: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/teppich-aus-jute",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-rug-jute.webp",
+        "url": "/mock-media/seed/products/nh-rug-jute.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Teppich aus Jute"
+      }
+    },
+    {
+      "id": "01a1cbcf-db37-762e-84e1-bf0650a1deac",
+      "sku": "NH-BED-BIRCH",
+      "locale": "de",
+      "slug": "bettgestell-aus-birke",
+      "name": "Bettgestell aus Birke",
+      "short_description": "Bettgestell aus Birke: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/bettgestell-aus-birke",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-bed-birch.webp",
+        "url": "/mock-media/seed/products/nh-bed-birch.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Bettgestell aus Birke"
+      }
+    },
+    {
+      "id": "01a1cbcf-db38-7997-8ece-216d59f51a3f",
+      "sku": "NH-STOOL-WALNUT",
+      "locale": "de",
+      "slug": "barhocker-aus-nussbaum",
+      "name": "Barhocker aus Nussbaum",
+      "short_description": "Barhocker aus Nussbaum: in Skandinavien entworfen, für Jahrzehnte gebaut.",
+      "path": "/products/barhocker-aus-nussbaum",
+      "is_featured": false,
+      "image": {
+        "key": "seed/products/nh-stool-walnut.webp",
+        "url": "/mock-media/seed/products/nh-stool-walnut.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Barhocker aus Nussbaum"
+      }
+    }
+  ],
+  "page": 1,
+  "page_size": 100,
+  "total": 8,
+  "total_pages": 1
+}

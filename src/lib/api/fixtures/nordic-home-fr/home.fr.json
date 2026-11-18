@@ -1,0 +1,96 @@
+{
+  "locale": "fr",
+  "title": "Le design scandinave pour votre intérieur",
+  "subtitle": "Des meubles durables en matériaux naturels.",
+  "blocks": [
+    {
+      "type": "hero",
+      "heading": "Un intérieur intemporel",
+      "subheading": "Des meubles durables en matériaux naturels.",
+      "image_key": null,
+      "cta": {
+        "label": "Voir tous les produits",
+        "href": "/products"
+      }
+    },
+    {
+      "type": "featured_products",
+      "heading": "Nos coups de cœur",
+      "limit": 3
+    },
+    {
+      "type": "features",
+      "heading": null,
+      "items": [
+        {
+          "title": "Bois massif",
+          "description": "Uniquement des bois certifiés.",
+          "icon": null
+        },
+        {
+          "title": "Fait main",
+          "description": "Fabriqué dans de petits ateliers.",
+          "icon": null
+        },
+        {
+          "title": "Garantie 10 ans",
+          "description": "Conçu pour durer.",
+          "icon": null
+        }
+      ]
+    }
+  ],
+  "featured_products": [
+    {
+      "id": "01a1cbcf-db34-7981-a4f4-69c7269a1510",
+      "sku": "NH-SHELF-PINE",
+      "locale": "fr",
+      "slug": "etagere-murale-en-pin",
+      "name": "Étagère murale en pin",
+      "short_description": "Étagère murale en pin : conçu en Scandinavie, fait pour durer des décennies.",
+      "path": "/products/etagere-murale-en-pin",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-shelf-pine.webp",
+        "url": "/mock-media/seed/products/nh-shelf-pine.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Étagère murale en pin"
+      }
+    },
+    {
+      "id": "01a1cbcf-db36-7420-af08-1a973140ff22",
+      "sku": "NH-RUG-JUTE",
+      "locale": "fr",
+      "slug": "tapis-en-jute",
+      "name": "Tapis en jute",
+      "short_description": "Tapis en jute : conçu en Scandinavie, fait pour durer des décennies.",
+      "path": "/products/tapis-en-jute",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-rug-jute.webp",
+        "url": "/mock-media/seed/products/nh-rug-jute.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Tapis en jute"
+      }
+    },
+    {
+      "id": "01a1cbcf-db37-762e-84e1-bf0650a1deac",
+      "sku": "NH-BED-BIRCH",
+      "locale": "fr",
+      "slug": "cadre-de-lit-en-bouleau",
+      "name": "Cadre de lit en bouleau",
+      "short_description": "Cadre de lit en bouleau : conçu en Scandinavie, fait pour durer des décennies.",
+      "path": "/products/cadre-de-lit-en-bouleau",
+      "is_featured": true,
+      "image": {
+        "key": "seed/products/nh-bed-birch.webp",
+        "url": "/mock-media/seed/products/nh-bed-birch.webp",
+        "width": 1200,
+        "height": 900,
+        "alt": "Cadre de lit en bouleau"
+      }
+    }
+  ]
+}
