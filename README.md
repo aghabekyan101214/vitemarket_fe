@@ -69,8 +69,9 @@ Pull-request branches get preview versions.
   **Runtime** config comes from `vars` in `wrangler.jsonc`, which every deploy reapplies, so
   change those values by commit, not in the dashboard. `REVALIDATE_WEBHOOK_SECRET` is a Worker
   secret set in the dashboard.
-* `SHOWCASE_API_URL` is still a placeholder: until it points at a reachable backend, every page
-  returns 503 (no host map).
+* `SHOWCASE_API_URL` points at the backend on the Hetzner VM (`https://api.2-29-168-64.sslip.io`).
+  A host only renders once it is registered as a domain of an active website in the backend
+  (or mapped with `DEV_HOST_ALIASES` outside production); anything else is 404.
 * Cache: R2 bucket `showcase-next-cache` (incremental cache) plus Durable Objects (tag cache and
   revalidation queue).
 * Manual: `npm run cf:preview` (local Workers runtime) and `npm run cf:deploy` (needs `wrangler login`).
