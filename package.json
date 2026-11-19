@@ -18,9 +18,14 @@
     "gen:types": "sh scripts/export-openapi.sh",
     "check:types": "sh scripts/export-openapi.sh && git diff --exit-code -- openapi.json src/types/api.generated.ts",
     "fixtures:record": "node scripts/record-fixtures.ts",
-    "warmup": "node scripts/warmup.ts"
+    "warmup": "node scripts/warmup.ts",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "1.20.17",
     "next": "16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",
@@ -39,6 +44,7 @@
     "postcss": "8.5.32",
     "tailwindcss": "4.3.5",
     "typescript": "5.9.3",
-    "vitest": "5.1.0"
+    "vitest": "5.1.0",
+    "wrangler": "4.164.0"
   }
 }

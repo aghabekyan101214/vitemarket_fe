@@ -1,0 +1,48 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Next.js on Cloudflare Workers via OpenNext. Built and deployed by Cloudflare Workers Builds
+  // on every push to `main` (build: `npx opennextjs-cloudflare build`, deploy: `npx opennextjs-cloudflare deploy`).
+  "name": "showcase-frontend",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    // Must match "name" above.
+    { "binding": "WORKER_SELF_REFERENCE", "service": "showcase-frontend" }
+  ],
+  // ISR / data cache. KV instead of R2 because R2 is not enabled on the account yet
+  // (CLOUDFLARE_PLAN.md §4 targets R2 "showcase-next-cache"; switch once it is).
+  "kv_namespaces": [
+    { "binding": "NEXT_INC_CACHE_KV", "id": "aedeae707a4c44a888ee2856dc0c2772" }
+  ],
+  // Tag cache (on-demand revalidateTag) and the time-based revalidation queue.
+  "durable_objects": {
+    "bindings": [
+      { "name": "NEXT_CACHE_DO_QUEUE", "class_name": "DOQueueHandler" },
+      { "name": "NEXT_TAG_CACHE_DO_SHARDED", "class_name": "DOShardedTagCache" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["DOQueueHandler", "DOShardedTagCache"] }
+  ],
+  // Non-secret runtime config (validated by src/config/env.ts). These overwrite dashboard values on every deploy.
+  // REVALIDATE_WEBHOOK_SECRET is a Worker secret, set in the dashboard (Settings → Variables and Secrets).
+  "vars": {
+    "APP_ENV": "staging",
+    "SHOWCASE_API_MODE": "http",
+    // TODO: replace with the public backend URL once it is deployed (CLOUDFLARE_PLAN.md §6).
+    "SHOWCASE_API_URL": "https://api.example.invalid/public/v1",
+    "HOST_MAP_TTL_SECONDS": "60",
+    "TRUST_FORWARDED_HOST": "false",
+    "NEXT_PUBLIC_IMAGE_PROVIDER": "none"
+  },
+  // Keep variables/secrets added in the dashboard across deploys.
+  "keep_vars": true,
+  "observability": {
+    "enabled": true
+  }
+}

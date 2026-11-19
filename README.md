@@ -51,6 +51,30 @@ in `docker-compose.yml` (`x-backend-env`) and restart `worker`.
 CI: [`.github/workflows/frontend.yml`](../.github/workflows/frontend.yml) (types, lint, unit,
 OpenAPI drift, build, e2e, Lighthouse CI mobile ≥ 90).
 
+## Deploy (Cloudflare Workers)
+
+The app runs on Cloudflare Workers via [OpenNext](https://opennext.js.org/cloudflare)
+(`wrangler.jsonc`, `open-next.config.ts`). **Cloudflare Workers Builds** is connected to this
+repo, so every push or merge to `main` builds and deploys the Worker `showcase-frontend`.
+Pull-request branches get preview versions.
+
+| Workers Builds setting | Value |
+| --- | --- |
+| Build command | `npx opennextjs-cloudflare build` |
+| Deploy command | `npx opennextjs-cloudflare deploy` |
+| Non-production branch deploy command | `npx opennextjs-cloudflare upload` |
+| Build variables | `SHOWCASE_API_MODE=mock`, `APP_ENV=staging`, `NEXT_PUBLIC_IMAGE_PROVIDER=none`, `NEXT_TELEMETRY_DISABLED=1` |
+
+* `next build` prerenders a placeholder route, so the build runs in mock mode (as in CI).
+  **Runtime** config comes from `vars` in `wrangler.jsonc`, which every deploy reapplies, so
+  change those values by commit, not in the dashboard. `REVALIDATE_WEBHOOK_SECRET` is a Worker
+  secret set in the dashboard.
+* `SHOWCASE_API_URL` is still a placeholder: until it points at a reachable backend, every page
+  returns 503 (no host map).
+* Cache: KV `showcase-next-cache` (incremental cache) plus Durable Objects (tag cache and
+  revalidation queue). Move to R2 once it is enabled on the account (`CLOUDFLARE_PLAN.md` §4).
+* Manual: `npm run cf:preview` (local Workers runtime) and `npm run cf:deploy` (needs `wrangler login`).
+
 ## Environment
 
 Validated at server start by `src/config/env.ts` (fail fast).
