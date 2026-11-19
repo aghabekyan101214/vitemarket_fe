@@ -14,10 +14,9 @@
     // Must match "name" above.
     { "binding": "WORKER_SELF_REFERENCE", "service": "showcase-frontend" }
   ],
-  // ISR / data cache. KV instead of R2 because R2 is not enabled on the account yet
-  // (CLOUDFLARE_PLAN.md §4 targets R2 "showcase-next-cache"; switch once it is).
-  "kv_namespaces": [
-    { "binding": "NEXT_INC_CACHE_KV", "id": "aedeae707a4c44a888ee2856dc0c2772" }
+  // ISR / data cache (CLOUDFLARE_PLAN.md §4). Private bucket.
+  "r2_buckets": [
+    { "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "showcase-next-cache" }
   ],
   // Tag cache (on-demand revalidateTag) and the time-based revalidation queue.
   "durable_objects": {

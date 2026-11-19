@@ -71,8 +71,8 @@ Pull-request branches get preview versions.
   secret set in the dashboard.
 * `SHOWCASE_API_URL` is still a placeholder: until it points at a reachable backend, every page
   returns 503 (no host map).
-* Cache: KV `showcase-next-cache` (incremental cache) plus Durable Objects (tag cache and
-  revalidation queue). Move to R2 once it is enabled on the account (`CLOUDFLARE_PLAN.md` §4).
+* Cache: R2 bucket `showcase-next-cache` (incremental cache) plus Durable Objects (tag cache and
+  revalidation queue).
 * Manual: `npm run cf:preview` (local Workers runtime) and `npm run cf:deploy` (needs `wrangler login`).
 
 ## Environment
